@@ -1,61 +1,44 @@
-# 📡 Wi-Fi Security Analyzer
+# WI-FI SECURITY ANALYZER
 
-A beginner-friendly cybersecurity project that scans nearby Wi-Fi networks, analyzes their signal strength and security type, and identifies potentially risky networks through a simple web-based dashboard.
+## Overview
 
-## 🚀 Features
+Wi-Fi Security Analyzer is a small, beginner-friendly web dashboard that scans
+Wi-Fi networks visible to your computer, shows their signal strength, and
+analyzes their advertised security configuration (WPA3 / WPA2 / WPA/WPA2 /
+WEP / OPEN). It flags networks that look risky so you can make more informed
+decisions about which Wi-Fi networks to trust.
 
-* 📡 Scan nearby Wi-Fi networks
-* 📶 Display signal strength in dBm
-* 🔐 Detect Wi-Fi security type such as WPA2, WPA3, WEP, and OPEN
-* 🛡️ Classify networks as SAFE, CAUTION, or RISK
-* 📊 Display network statistics
-* 🔄 Dynamic scanning without page refresh
-* 💻 Windows Wi-Fi scanning using `netsh`
-* 🎭 Simulation mode when real scanning is unavailable
-* 🌐 Web dashboard using Flask
-* 🐳 Docker support
-* ☁️ Ready for Render deployment
-* ▶️ Easy Windows startup using `run.bat`
+This is a **defensive, read-only** tool. It only reads publicly broadcast
+Wi-Fi information — it never attempts to crack passwords, brute-force
+anything, deauthenticate devices, attack routers, or connect automatically to
+any network. See [Ethical Use](#ethical-use) below.
 
----
+## Features
 
-## 🖥️ Dashboard
+- 🔍 One-click Wi-Fi scan (no page reload)
+- 📶 Signal strength shown in dBm (approximate) with Excellent / Good / Fair /
+  Weak classification
+- 🔐 Security classification: SAFE / CAUTION / HIGH RISK / RISK, with a
+  plain-language reason for each network
+- 📊 Live dashboard stats: networks found, secure networks, risky networks,
+  strongest signal
+- 🧭 Filter networks by name and sort by signal strength or security status
+- 🧪 Automatic **simulation/demo mode** when real scanning isn't possible
+  (e.g. inside Docker or on a cloud host), clearly labeled as demo data
+- 🐳 Docker-ready and easy to deploy to Render
 
-Example:
+## Technologies
 
 ```text
-              WI-FI SECURITY ANALYZER
-
-     Scan nearby Wi-Fi networks and analyze
-       their signal strength and security.
-
-                 [ 🔍 SCAN WI-FI ]
-
- Networks Found: 4     Secure: 2     Risky: 2
-
- Network       Signal       Security       Status
- ------------------------------------------------------
- Home_WiFi     -42 dBm     WPA2           SAFE
- JioFiber      -58 dBm     WPA3           SAFE
- Guest_WiFi    -75 dBm     OPEN           ⚠️ RISK
- Unknown       -82 dBm     OPEN           ⚠️ RISK
+Python
+Flask
+HTML
+CSS
+JavaScript
+Docker
 ```
 
----
-
-## 🛠️ Technologies Used
-
-* **Python**
-* **Flask**
-* **HTML5**
-* **CSS3**
-* **JavaScript**
-* **Docker**
-* **Windows `netsh`**
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```text
 wifi-security-analyzer/
@@ -76,177 +59,119 @@ wifi-security-analyzer/
     └── script.js
 ```
 
----
+## Requirements
 
-## ⚙️ Requirements
+- Windows 10/11 (for real Wi-Fi scanning via `netsh`)
+- Python 3.9 or newer
+- Wi-Fi adapter enabled and turned on
 
-For local execution on Windows:
+> Real scanning is currently implemented for **Windows only**. On other
+> platforms, or when the real scan fails for any reason, the app
+> automatically switches to simulation/demo mode instead of crashing.
 
-* Python 3.10+
-* Wi-Fi adapter
-* Windows operating system
-* Internet connection for installing Python dependencies
+## Installation
 
-Check Python:
-
-```bash
-python --version
-```
-
----
-
-## ▶️ Run the Project Easily
-
-The easiest way to start the project on Windows is:
-
-```bash
-run.bat
-```
-
-The script automatically:
-
-1. Checks for Python.
-2. Creates a virtual environment.
-3. Activates the virtual environment.
-4. Installs required dependencies.
-5. Starts the Flask server.
-
-Then open:
+Clone the repository, then either use `run.bat` (easiest) or run it manually.
 
 ```text
-http://127.0.0.1:5000
-```
-
----
-
-## 🔧 Manual Installation
-
-Clone the repository:
-
-```bash
 git clone <YOUR_GITHUB_REPOSITORY>
 cd wifi-security-analyzer
 ```
 
-Create a virtual environment:
+## Run Using run.bat
 
-```bash
+On Windows, simply double-click `run.bat`, or run it from Command Prompt:
+
+```text
+run.bat
+```
+
+This will:
+
+1. Check that Python is installed
+2. Create a virtual environment (if one doesn't already exist)
+3. Activate the virtual environment
+4. Install dependencies from `requirements.txt`
+5. Start the Flask server at `http://127.0.0.1:5000`
+
+## Manual Run
+
+```text
 python -m venv venv
-```
-
-Activate it:
-
-```bash
 venv\Scripts\activate
-```
-
-Install dependencies:
-
-```bash
 pip install -r requirements.txt
-```
-
-Start the application:
-
-```bash
 python app.py
 ```
 
-Open:
+Then open `http://127.0.0.1:5000` in your browser.
+
+## Docker
+
+Build and run the container locally:
 
 ```text
-http://127.0.0.1:5000
+docker build -t wifi-security-analyzer .
+docker run -p 5000:5000 wifi-security-analyzer
 ```
 
----
+Then open `http://127.0.0.1:5000` in your browser.
 
-## 📡 How Wi-Fi Scanning Works
+> Note: Docker containers cannot access your host machine's physical Wi-Fi
+> adapter, so the app will automatically show simulation/demo data when run
+> in Docker.
 
-On Windows, the project uses:
-
-```bash
-netsh wlan show networks mode=bssid
-```
-
-The Python backend processes the command output and extracts information such as:
-
-* SSID
-* Signal percentage
-* Security/authentication type
-* Encryption information when available
-
-The application then analyzes the information and displays the results on the dashboard.
-
----
-
-## 📶 Signal Strength
-
-Windows commonly provides signal strength as a percentage. The project converts it to an approximate dBm value.
-
-Approximate classification:
-
-| Signal         | Quality   |
-| -------------- | --------- |
-| -30 to -50 dBm | Excellent |
-| -51 to -60 dBm | Good      |
-| -61 to -70 dBm | Fair      |
-| Below -70 dBm  | Weak      |
-
-The dBm conversion is an approximation and should not be considered a precise measurement.
-
----
-
-## 🔐 Security Analysis
-
-The project analyzes the advertised Wi-Fi security configuration.
-
-| Security | Status       |
-| -------- | ------------ |
-| WPA3     | 🟢 SAFE      |
-| WPA2     | 🟢 SAFE      |
-| WPA/WPA2 | 🟡 CAUTION   |
-| WEP      | 🔴 HIGH RISK |
-| OPEN     | ⚠️ RISK      |
-| Unknown  | 🟡 CAUTION   |
-
-**Note:** SAFE means that no obvious weakness was detected from the advertised security type. It does not guarantee that the network itself is completely secure.
-
----
-
-## 🎭 Simulation Mode
-
-Real Wi-Fi scanning depends on the operating system, Wi-Fi adapter, permissions, and execution environment.
-
-When real scanning is unavailable, the application can use demonstration data such as:
+## Render Deployment
 
 ```text
-Home_WiFi     -42 dBm    WPA2    SAFE
-JioFiber      -58 dBm    WPA3    SAFE
-Guest_WiFi    -75 dBm    OPEN    ⚠️ RISK
-Unknown       -82 dBm    OPEN    ⚠️ RISK
+GitHub
+   ↓
+Create repository
+   ↓
+Push project
+   ↓
+Render
+   ↓
+New Web Service
+   ↓
+Deploy using Dockerfile
+   ↓
+Public URL
 ```
 
-The dashboard clearly indicates when **Simulation/Demo Mode** is active.
+Steps:
 
-Simulated networks are never presented as real detected networks.
+1. Push this project to a new GitHub repository (see [GitHub](#github) below).
+   **Push the *contents* of this folder to the repo root** — `app.py`,
+   `Dockerfile`, `requirements.txt`, etc. should sit directly at the top
+   level of the repo, not inside an extra subfolder. If GitHub shows
+   `wifi-security-analyzer/app.py` instead of just `app.py`, you've pushed
+   one level too deep.
+2. In Render, click **New → Web Service**.
+3. Connect your GitHub repository.
+4. Render will detect the `Dockerfile` automatically — select "Docker" as the
+   environment.
+5. **If your repo does have the project inside a subfolder**, set Render's
+   **Root Directory** setting (under the service's Settings → Build) to that
+   subfolder name (e.g. `wifi-security-analyzer`) so Render's build context
+   actually contains `requirements.txt` and `Dockerfile`. This is the most
+   common cause of the error:
+   `failed to calculate checksum of ref ...: "/requirements.txt": not found`
+   — it means Render is building from a folder that doesn't directly contain
+   `requirements.txt`.
+6. Deploy. Render provides the `PORT` environment variable automatically; the
+   app already listens on it.
+7. Once deployed, your dashboard is publicly accessible at the Render URL,
+   with no username/password required.
 
----
+## API
 
-## 🌐 API
+### `GET /`
 
-### Get Dashboard
+Serves the main HTML dashboard.
 
-```text
-GET /
-```
+### `GET /api/scan`
 
-Returns the web dashboard.
-
-### Scan Wi-Fi Networks
-
-```text
-GET /api/scan
-```
+Runs a Wi-Fi scan and returns JSON results.
 
 Example response:
 
@@ -261,141 +186,110 @@ Example response:
       "signal_percent": 84,
       "signal_quality": "Excellent",
       "security": "WPA2",
-      "status": "SAFE"
+      "status": "SAFE",
+      "reason": "No obvious security weakness detected from the advertised Wi-Fi security type (WPA2)."
     }
   ]
 }
 ```
 
----
+If scanning fails, the API still returns JSON (with `simulation: true` and a
+`note` explaining what happened) rather than crashing.
 
-## 🐳 Docker
-
-Build the Docker image:
-
-```bash
-docker build -t wifi-security-analyzer .
-```
-
-Run it:
-
-```bash
-docker run -p 5000:5000 wifi-security-analyzer
-```
-
-Open:
+## Security Classification
 
 ```text
-http://localhost:5000
+WPA3              → SAFE
+WPA2              → SAFE
+WPA/WPA2          → CAUTION
+WEP               → HIGH RISK
+OPEN              → RISK
+Unknown           → CAUTION
 ```
 
-The application listens on `0.0.0.0` and supports the `PORT` environment variable for cloud deployment.
+A **SAFE** label only means no obvious weakness was detected from the
+network's *advertised* security type — it does not guarantee the network is
+completely secure. Always use judgment, especially on unfamiliar networks.
 
----
-
-## ☁️ Render Deployment
-
-This project includes a `Dockerfile`, making it suitable for deployment on Render.
-
-General deployment process:
+## Signal Classification
 
 ```text
-GitHub Repository
-        ↓
-      Render
-        ↓
-   Dockerfile
-        ↓
-   Web Service
-        ↓
-   Public URL
+-30 to -50 dBm → Excellent
+-51 to -60 dBm → Good
+-61 to -70 dBm → Fair
+Below -70 dBm  → Weak
 ```
 
-### Important limitation
+Signal strength is reported in dBm, approximated from Windows' percentage
+reading using `dBm ≈ (signal_percent / 2) - 100`. This is an estimate, not a
+precise RF measurement.
 
-A cloud server cannot access the Wi-Fi adapter of every visitor's computer.
+## Important Limitation
 
-Therefore:
-
-**Local execution:**
+- **Local execution** (`run.bat` or `python app.py` on your Windows laptop)
+  can scan the Wi-Fi networks actually visible to *that* computer.
+- **Cloud deployment** (e.g. on Render) runs on a remote server that has no
+  physical Wi-Fi adapter and cannot see the networks around any visitor's
+  laptop or phone. In that case, the app automatically shows clearly-labeled
+  simulation/demo data instead.
 
 ```text
-Your Computer
-     ↓
-Python + Flask
-     ↓
-Wi-Fi Adapter
-     ↓
-Nearby Wi-Fi Networks
+Local execution                      Render deployment
+----------------                     ------------------
+run.bat                              Browser
+  ↓                                    ↓
+Python Flask                         Render
+  ↓                                    ↓
+Local Wi-Fi adapter                  Cloud server
+  ↓                                    ↓
+Real nearby Wi-Fi networks           Simulation/demo data
 ```
 
-**Cloud deployment:**
+## Ethical Use
+
+This tool is intended **only** for defensive network visibility and security
+awareness — for example, checking your own home or office Wi-Fi environment.
+
+It may:
+
+- Detect visible Wi-Fi networks
+- Read publicly broadcast Wi-Fi information
+- Analyze signal strength
+- Analyze advertised security configuration
+
+It must **not** be used to:
+
+- Crack Wi-Fi passwords
+- Perform brute-force attacks
+- Capture passwords
+- Deauthenticate users
+- Attack routers
+- Intercept private traffic
+- Capture network packets for unauthorized purposes
+- Attempt unauthorized access to any network
+- Connect automatically to detected networks
+
+Only use this tool on networks and devices you own or have explicit
+permission to analyze.
+
+## Future Improvements
+
+- Linux support (e.g. via `nmcli` or `iwlist`)
+- macOS support (e.g. via `airport` or `CoreWLAN`)
+- Wi-Fi channel analysis
+- Channel congestion detection
+- Historical signal graphs
+- Export scan results (CSV/JSON)
+- Local agent + cloud dashboard architecture
+- Better Wi-Fi security detection (e.g. WPA2 vs WPA2-Enterprise)
+
+## GitHub
 
 ```text
-User Browser
-     ↓
-Render Server
-     ↓
-Simulation/Demo Mode
+git init
+git add .
+git commit -m "Initial Wi-Fi Security Analyzer project"
+git branch -M main
+git remote add origin <YOUR_GITHUB_REPOSITORY>
+git push -u origin main
 ```
-
-The Render version is therefore intended primarily for demonstrating the web application unless a separate local scanning agent is added.
-
----
-
-## 🛡️ Security & Ethical Use
-
-This project is designed for **defensive cybersecurity and network awareness**.
-
-It only analyzes publicly visible Wi-Fi information.
-
-It does **not**:
-
-* Crack Wi-Fi passwords
-* Perform brute-force attacks
-* Capture Wi-Fi passwords
-* Deauthenticate devices
-* Attack routers
-* Intercept private traffic
-* Attempt unauthorized access
-* Automatically connect to networks
-
-Only use the project on systems and networks you are authorized to analyze.
-
----
-
-## 🔮 Future Improvements
-
-Possible future features:
-
-* 📊 Wi-Fi signal history graphs
-* 📡 Wi-Fi channel analysis
-* 🚦 Channel congestion detection
-* 🐧 Linux support
-* 🍎 macOS support
-* 📄 Export scan results
-* 📈 Historical network monitoring
-* 🔔 Security alerts
-* 🖥️ Local scanning agent
-* 🌐 Local agent + cloud dashboard
-
----
-
-## 👨‍💻 Project Purpose
-
-The **Wi-Fi Security Analyzer** was developed as a beginner-friendly cybersecurity project to demonstrate:
-
-* Python programming
-* Network information gathering
-* Wi-Fi security analysis
-* Flask web development
-* Frontend development
-* REST API usage
-* Docker containerization
-* Cloud deployment
-
----
-
-## 📜 License
-
-This project is intended for educational and defensive cybersecurity purposes.
